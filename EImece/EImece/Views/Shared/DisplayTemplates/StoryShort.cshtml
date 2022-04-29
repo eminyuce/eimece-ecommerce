@@ -1,0 +1,32 @@
+﻿@model EImece.Domain.Entities.Story
+@using EImece.Domain.Helpers.Extensions;
+@using EImece.Domain.Entities;
+@using EImece.Domain.Helpers.HtmlHelpers;
+@using EImece.Domain.Helpers;
+@using EImece.Domain;
+@using Resources;
+@{
+    var story = Model;
+    var isUserAuthenticated = User.Identity.IsAuthenticated && AppConfig.IsEditLinkEnable;
+    int Width = ViewData["Width"].ToInt(0);
+    int Height = ViewData["Height"].ToInt(0);
+}
+
+<div class="story">
+    <h3>
+        @*@Html.Raw(story.GetThumpImageTag())*@
+        @Html.Raw(story.GetCroppedImageTag(Width, Height))
+
+        <a href="@story.DetailPageUrl">
+            @Html.DisplayFor(model => story.Name)
+            @if (isUserAuthenticated)
+            {
+            @Html.ActionLink(Resource.AdminEdit, "saveoredit", "stories", new { @id = story.Id, @area = "admin" }, new { @class="adminPageLink", @target="_blank"   })
+            }
+        </a>
+        <small>@story.CreatedDate</small>
+    </h3>
+    <p>
+        @story.GetSeoDescription(300)
+    </p>
+</div>

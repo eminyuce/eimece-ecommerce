@@ -1,0 +1,62 @@
+﻿@model EImece.Domain.Entities.Story
+@using EImece.Domain.Helpers.Extensions;
+@using EImece.Domain.Helpers.Extensions;
+@using EImece.Domain.Helpers;
+@using EImece.Domain;
+@using Resources;
+
+@{
+    var story = Model;
+    var categoryName = story.StoryCategory.Name;
+    var isUserAuthenticated = User.Identity.IsAuthenticated && AppConfig.IsEditLinkEnable;
+    var tags = story.StoryTags.Select(r1 => r1.Tag).Distinct().ToList();
+    int Width = ViewData["Width"].ToInt(0);
+    int Height = ViewData["Height"].ToInt(0);
+    var storyImageTag = story.GetCroppedImageTag(Width, Height);
+}
+
+<article class="post">
+
+    <figure class="post-img">
+
+        <a href="@story.DetailPageUrl">
+            @Html.Raw(storyImageTag)
+        </a>
+    </figure>
+
+    <section class="date">
+        <span class="day">@story.CreatedDate.Day</span>
+        <span class="month">@story.CreatedDate.ToString("MMM")</span>
+    </section>
+
+    <section class="post-content">
+
+        <header class="meta">
+            <h2>
+                <a href="@story.DetailPageUrl">
+
+                    @story.Name
+                </a>
+                @if (isUserAuthenticated)
+                {
+                @Html.ActionLink(Resource.AdminEdit, "saveoredit", "stories", new { @id = story.Id, @area = "admin" }, new { @class="adminPageLink", @target="_blank"   })
+                }
+            </h2>
+            <span>
+                <i class="fa fa-tag"></i>
+
+                @for (int i = 0; i < tags.Count; i++)
+                {
+                    var tag = tags[i];
+                <a href="#">@tag.Name</a>
+                }
+            </span>
+        </header>
+
+        <p>
+            @story.GetSeoDescription(300)
+        </p>
+
+        <a href="@story.DetailPageUrl" class="button color">@Resource.ReadMore</a>
+    </section>
+</article>
